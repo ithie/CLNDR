@@ -244,7 +244,9 @@ $('.parent-element').clndr({
   // either the startDate, endDate, or both in the constraints option. You
   // can change these while the calendar is on the page... See documentation
   // below for more on this!
+  // A new option is a list of invalid dates.
   constraints: {
+    invalidDates: ['217-12-18','2018-01-01','2018-01-02'],
     startDate: '2017-12-22',
     endDate: '2018-01-09'
   }
@@ -510,6 +512,8 @@ Todo
 
 Changelog
 =========
+`v1.2.0 ~ 2014-05-07`: Added new constraint, to add a specific list of invalid days to the calendar.
+
 `v1.2.0 ~ 2014-01-22`: BC break for Bower users! Underscore is no longer listed as a dependency in the Bower plugin, allowing you the flexibility of choosing the templating language you prefer. Also added a day of the week class to all clndr days in the format `calendar-dow-<0 - 6>`, allowing you to style weekends/specific days of the week differently.
 
 `v1.1.3 ~ 2014-01-17`: fixed a bug where multiday events longer than two months would not show up. Fixed a bug that prevented clndr from loading in IE8.
