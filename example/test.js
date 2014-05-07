@@ -143,6 +143,14 @@ $( function() {
     }
   });
 
+  // test the end constraint by itself (12th of next month)
+  // ================================================================================
+  clndr.invalidDatesConstriant = $('#invalid-dates-constraint').clndr({
+    constraints: {
+        invalidDates: [moment().format('YYYY-MM-') + '10',moment().format('YYYY-MM-') + '12']
+    }
+  });
+
 
   // test api
   // (you could do this with any instance but this makes for a nice reminder)
