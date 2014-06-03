@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<project name="js-css-minifying">
+    <description>Minifies JS and CSS files in src directories</description>
+
+    <property file="build.properties" />
+
+    <path id="task.classpath">
+        <pathelement location="${yuicompressor.jar}" />
+        <pathelement location="${yuicompressor-ant-task.jar}" />
+    </path>
+
+    <target name="check-task-jar-is-present" description="Checks if the required ant task jar exists in the expected dir">
+        <echo>Checking if the required ant task is present...</echo>
+        <available file="${yuicompressor-ant-task.jar}" property="task.jar.present" />
+        <echo>OK!</echo>
+    </target>
+
+    <target name="define-ant-task" depends="check-task-jar-is-present" if="task.jar.present" description="Defines the ant task">
+        <echo>Defining the ant task...</echo>
+        <taskdef name="yui-compressor" classname="net.noha.tools.ant.yuicompressor.tasks.YuiCompressorTask">
+            <classpath refid="task.classpath" />
+        </taskdef>
+        <echo>OK!</echo>
+    </target>
+
+    <target name="clean" description="Deletes all already compressed files">
+        <echo>Deleting already compressed files...</echo>
+        <delete>
+            <fileset dir="${css.dist.dir}">
+                <include name="*" />
+            </fileset>
+        </delete>
+        <delete>
+            <fileset dir="${js.internal.dist.dir}">
+                <include name="*" />
+            </fileset>
+        </delete>
+        <echo>OK!</echo>
+    </target>    
+    
+    <target name="concat" description="Concats JavaScript files from their respective sub directories into one file each">
+        
+        <echo>Concatenating internal JS files...</echo>
+        
+        <echo>    knFl.js...</echo>
+        <concat destfile="${js.internal.src.dir}/../buildTool/tmp/knFl.js" encoding="UTF-8" outputencoding="UTF-8">
+            <fileset dir="${js.internal.src.dir}/lib/knfl" includes="_init.js"/>
+            <fileset dir="${js.internal.src.dir}/lib/knfl/logger" includes="*.js"/>
+            <fileset dir="${js.internal.src.dir}/lib/knfl" includes="knFl.core.js"/>
+            <fileset dir="${js.internal.src.dir}/lib/knfl/dom" includes="*.js"/>
+            <fileset dir="${js.internal.src.dir}/lib/knfl/events" includes="*.js"/>
+            <fileset dir="${js.internal.src.dir}/lib/knfl/storage" includes="*.js"/>
+            <fileset dir="${js.internal.src.dir}/lib/knfl/filter" includes="*.js"/>
+            <fileset dir="${js.internal.src.dir}/lib/knfl/render" includes="*.js"/>
+        </concat>
+        <echo>    OK!</echo>
+
+        <echo>    twin.js...</echo>
+        <concat destfile="${js.internal.src.dir}/../buildTool/tmp/twin.js" encoding="UTF-8" outputencoding="UTF-8">
+            <fileset dir="${js.internal.src.dir}/twin/filter" includes="*.js"/>
+            <fileset dir="${js.internal.src.dir}/twin" includes="*.js"/>
+        </concat>
+        <echo>    OK!</echo>
+
+        <echo>    realProd.js...</echo>
+        <concat destfile="${js.internal.src.dir}/../buildTool/tmp/app.js" encoding="UTF-8" outputencoding="UTF-8">
+            <fileset dir="${js.internal.src.dir}/realProd/filter" includes="*.js"/>
+            <fileset dir="${js.internal.src.dir}/realProd" includes="*.js"/>
+        </concat>
+        <echo>    OK!</echo>
+        
+    </target>
+
+    <target name="minify-css-files" depends="define-ant-task" description="Minifies all CSS source files">
+        <echo>Minifying CSS source files...</echo>
+        <yui-compressor warn="false" cssSuffix=".css" fromDir="${css.src.dir}" toDir="${css.dist.dir}" />
+        <echo>OK!</echo>
+    </target>
+
+    <target name="minify-js-internal-files" depends="define-ant-task" description="Minifies all internal JS files">
+        <echo>Minifying internal JS files...</echo>
+        <yui-compressor warn="false" munge="true" preserveAllSemiColons="false" jsSuffix=".js" fromDir="${js.internal.src.dir}/../buildTool/tmp/" toDir="${js.internal.dist.dir}" />
+        <yui-compressor warn="false" munge="true" preserveAllSemiColons="false" jsSuffix=".js" fromDir="${js.internal.src.dir}/../public/js/vendor_dev/" toDir="${js.internal.dist.dir}/../vendor" />
+        <echo>OK!</echo>
+    </target>
+
+    <target name="minify-all" >
+        <fail message="the target 'minify-all' is no longer in use, please use the target 'build'" />
+    </target>
+
+    <target name="minify-all-files" depends="minify-css-files, minify-js-internal-files" />
+
+    <target name="build" depends="concat, minify-all-files" />
+</project>
